@@ -168,33 +168,32 @@ function keyPress(key) {
 }
 
 
-// checks if the resulting position of current shape will be feasible
-function valid( offsetX, offsetY, newCurrent ) {
+// Função irá verificar se a posição da peça é valida
+function valid(offsetX, offsetY, newCurrent) {
     offsetX = offsetX || 0;
     offsetY = offsetY || 0;
     offsetX = currentX + offsetX;
     offsetY = currentY + offsetY;
     newCurrent = newCurrent || current;
 
-    for ( var y = 0; y < 4; ++y ) {
-        for ( var x = 0; x < 4; ++x ) {
-            if ( newCurrent[ y ][ x ] ) {
-                if ( typeof board[ y + offsetY ] == 'undefined'
-                  || typeof board[ y + offsetY ][ x + offsetX ] == 'undefined'
-                  || board[ y + offsetY ][ x + offsetX ]
-                  || x + offsetX < 0
-                  || y + offsetY >= ROWS
-                  || x + offsetX >= COLS ) {
-                    if (offsetY == 1 && freezed) {
-                        lose = true; // lose if the current shape is settled at the top most row
-                        document.getElementById('playbutton').disabled = false;
-                    } 
-                    return false;
-                }
+    for (var y = 0; y < 4; ++y) {
+        for (var x = 0; x < 4; ++x) {
+            if (BlockBounds(x, y, offsetX, offsetY) || BlockColliding(x, y, offsetX, offsetY, newCurrent)) {
+                return false;
             }
         }
     }
     return true;
+}
+
+// Função irá verificar se o bloco está fora dos limites do tabuleiro
+function BlockBounds(x, y, offsetX, offsetY) {
+    return (x + offsetX < 0 || y + offsetY >= ROWS || x + offsetX >= COLS);
+}
+
+// Função irá verificar se o bloco colide com outros blocos já presentes no tabuleiro
+function BlockColliding(x, y, offsetX, offsetY, newCurrent) {
+    return (typeof board[y + offsetY] == 'undefined' || typeof board[y + offsetY][x + offsetX] == 'undefined' || board[y + offsetY][x + offsetX] || newCurrent[y][x]);
 }
 
 function playButtonClicked() {
